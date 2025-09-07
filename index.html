@@ -256,8 +256,11 @@
 
             <!-- Employee Tasks -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-                <div class="p-6 border-b border-gray-100">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                     <h2 class="text-lg font-semibold text-gray-800">Tugas Saya</h2>
+                    <button onclick="showAddPersonalTaskModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        + Tugas Tambahan
+                    </button>
                 </div>
                 <div class="p-6">
                     <div id="employeeTasksList" class="space-y-4">
@@ -376,6 +379,105 @@
         </div>
     </div>
 
+    <!-- Employee Profile Modal -->
+    <div id="employeeProfileModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Profil Karyawan</h3>
+            <div id="employeeProfileContent" class="space-y-4">
+                <!-- Profile content will be populated here -->
+            </div>
+            <div class="flex gap-3 pt-4">
+                <button onclick="closeEmployeeProfileModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                    Tutup
+                </button>
+                <button onclick="showChangePasswordModal()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                    Ubah Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Ubah Password Karyawan</h3>
+            <form id="changePasswordForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password Baru</label>
+                    <input type="password" id="newPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+                    <input type="password" id="confirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeChangePasswordModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                        Ubah Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Jobdesc Modal -->
+    <div id="employeeJobdescModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl slide-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">Job Description Karyawan</h3>
+                <button onclick="closeEmployeeJobdescModal()" class="text-gray-500 hover:text-gray-700">
+                    <span class="text-2xl">×</span>
+                </button>
+            </div>
+            <div id="employeeJobdescContent" class="space-y-4">
+                <!-- Jobdesc content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Personal Task Modal -->
+    <div id="addPersonalTaskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Tugas Pribadi</h3>
+            <form id="addPersonalTaskForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul Tugas</label>
+                    <input type="text" id="personalTaskTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                    <textarea id="personalTaskDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori Tugas</label>
+                    <select id="personalTaskCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                        <option value="">Pilih kategori...</option>
+                        <option value="design">Design</option>
+                        <option value="video">Video</option>
+                        <option value="content">Konten Penjualan</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="development">Development</option>
+                        <option value="analysis">Analysis</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Target Selesai (Opsional)</label>
+                    <input type="datetime-local" id="personalTaskDeadline" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAddPersonalTaskModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                        Tambah Tugas
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Upload Evidence Modal -->
     <div id="uploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
@@ -423,6 +525,7 @@
 
         let currentUser = null;
         let currentTaskId = null;
+        let currentEmployeeId = null;
 
         // Authentication
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -510,9 +613,17 @@
                                     </span>`
                                 ).join('')}
                             </div>
-                            <button onclick="deleteEmployee(${employee.id})" class="text-red-500 hover:text-red-700 p-2">
-                                🗑️
-                            </button>
+                            <div class="flex gap-2">
+                                <button onclick="viewEmployeeProfile(${employee.id})" class="text-blue-500 hover:text-blue-700 p-2" title="Lihat Profil">
+                                    👤
+                                </button>
+                                <button onclick="viewEmployeeJobdesc(${employee.id})" class="text-green-500 hover:text-green-700 p-2" title="Lihat Jobdesc">
+                                    📋
+                                </button>
+                                <button onclick="deleteEmployee(${employee.id})" class="text-red-500 hover:text-red-700 p-2" title="Hapus">
+                                    🗑️
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -644,7 +755,10 @@
                 return `
                     <div class="p-4 bg-gray-50 rounded-lg">
                         <div class="flex items-start justify-between mb-2">
-                            <h4 class="font-medium text-gray-800">${task.title}</h4>
+                            <div class="flex items-center gap-2">
+                                <h4 class="font-medium text-gray-800">${task.title}</h4>
+                                ${task.isPersonal ? '<span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">Pribadi</span>' : ''}
+                            </div>
                             <span class="px-2 py-1 text-xs rounded-full ${statusColor}">${statusText}</span>
                         </div>
                         <p class="text-sm text-gray-600 mb-2">${task.description}</p>
@@ -776,6 +890,216 @@
         function closeAddEmployeeModal() {
             document.getElementById('addEmployeeModal').classList.add('hidden');
             document.getElementById('addEmployeeForm').reset();
+        }
+
+        function viewEmployeeProfile(employeeId) {
+            currentEmployeeId = employeeId;
+            const employee = users.find(u => u.id === employeeId);
+            if (!employee) return;
+
+            const skills = calculateEmployeeSkills(employeeId);
+            const employeeTasks = tasks.filter(t => t.assignee === employeeId);
+            const completedTasks = employeeTasks.filter(t => t.status === 'completed').length;
+            const pendingTasks = employeeTasks.filter(t => t.status === 'pending').length;
+
+            const profileContent = document.getElementById('employeeProfileContent');
+            profileContent.innerHTML = `
+                <div class="text-center mb-4">
+                    <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <span class="text-blue-600 font-bold text-2xl">${employee.name.charAt(0)}</span>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-800">${employee.name}</h4>
+                    <p class="text-gray-600">@${employee.username}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-green-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-green-600">${completedTasks}</p>
+                        <p class="text-sm text-gray-600">Tugas Selesai</p>
+                    </div>
+                    <div class="bg-orange-50 p-3 rounded-lg text-center">
+                        <p class="text-2xl font-bold text-orange-600">${pendingTasks}</p>
+                        <p class="text-sm text-gray-600">Tugas Pending</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <h5 class="font-medium text-gray-800">Skills & Level:</h5>
+                    ${Object.keys(skills).length > 0 ? 
+                        Object.entries(skills).map(([category, data]) => {
+                            const categoryInfo = categoryExpMap[category];
+                            const progressPercent = (data.exp % categoryInfo.levelThreshold) / categoryInfo.levelThreshold * 100;
+                            return `
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-medium text-gray-700">${categoryInfo.name}</span>
+                                        <span class="text-xs text-gray-500">Level ${data.level}</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${progressPercent}%"></div>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-gray-500">
+                                        <span>${data.exp} EXP Total</span>
+                                        <span>${data.exp % categoryInfo.levelThreshold}/${categoryInfo.levelThreshold} EXP</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('') 
+                        : '<p class="text-gray-500 text-sm">Belum ada skill yang dikuasai.</p>'
+                    }
+                </div>
+            `;
+
+            document.getElementById('employeeProfileModal').classList.remove('hidden');
+        }
+
+        function closeEmployeeProfileModal() {
+            document.getElementById('employeeProfileModal').classList.add('hidden');
+            currentEmployeeId = null;
+        }
+
+        function showChangePasswordModal() {
+            document.getElementById('employeeProfileModal').classList.add('hidden');
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+            document.getElementById('changePasswordForm').reset();
+            if (currentEmployeeId) {
+                document.getElementById('employeeProfileModal').classList.remove('hidden');
+            }
+        }
+
+        function viewEmployeeJobdesc(employeeId) {
+            const employee = users.find(u => u.id === employeeId);
+            if (!employee) return;
+
+            const employeeTasks = tasks.filter(t => t.assignee === employeeId);
+            const completedTasks = employeeTasks.filter(t => t.status === 'completed');
+            const pendingTasks = employeeTasks.filter(t => t.status === 'pending');
+
+            // Group tasks by category
+            const tasksByCategory = {};
+            employeeTasks.forEach(task => {
+                if (!tasksByCategory[task.category]) {
+                    tasksByCategory[task.category] = { completed: [], pending: [] };
+                }
+                if (task.status === 'completed') {
+                    tasksByCategory[task.category].completed.push(task);
+                } else {
+                    tasksByCategory[task.category].pending.push(task);
+                }
+            });
+
+            const jobdescContent = document.getElementById('employeeJobdescContent');
+            jobdescContent.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                            <span class="text-blue-600 font-bold text-xl">${employee.name.charAt(0)}</span>
+                        </div>
+                        <div>
+                            <h4 class="text-xl font-semibold text-gray-800">${employee.name}</h4>
+                            <p class="text-gray-600">Job Description & Task History</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="bg-blue-50 p-4 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-blue-600">${employeeTasks.length}</p>
+                            <p class="text-sm text-gray-600">Total Tugas</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-green-600">${completedTasks.length}</p>
+                            <p class="text-sm text-gray-600">Selesai</p>
+                        </div>
+                        <div class="bg-orange-50 p-4 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-orange-600">${pendingTasks.length}</p>
+                            <p class="text-sm text-gray-600">Pending</p>
+                        </div>
+                    </div>
+                </div>
+
+                ${Object.keys(tasksByCategory).length > 0 ? 
+                    Object.entries(tasksByCategory).map(([category, categoryTasks]) => `
+                        <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <h5 class="font-semibold text-gray-800 mb-3 flex items-center">
+                                <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                                ${categoryExpMap[category]?.name || category}
+                                <span class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                    ${categoryTasks.completed.length + categoryTasks.pending.length} tugas
+                                </span>
+                            </h5>
+                            
+                            ${categoryTasks.completed.length > 0 ? `
+                                <div class="mb-4">
+                                    <h6 class="text-sm font-medium text-green-700 mb-2">✅ Tugas Selesai (${categoryTasks.completed.length})</h6>
+                                    <div class="space-y-2">
+                                        ${categoryTasks.completed.map(task => {
+                                            const completedDate = task.completedAt ? new Date(task.completedAt).toLocaleDateString('id-ID') : 'N/A';
+                                            return `
+                                                <div class="bg-white p-3 rounded border-l-4 border-green-500">
+                                                    <p class="font-medium text-gray-800">${task.title}</p>
+                                                    <p class="text-sm text-gray-600">${task.description}</p>
+                                                    <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+                                                        <span>EXP: +${categoryExpMap[category]?.expPerTask || 0}</span>
+                                                        <span>Selesai: ${completedDate}</span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${categoryTasks.pending.length > 0 ? `
+                                <div>
+                                    <h6 class="text-sm font-medium text-orange-700 mb-2">⏳ Tugas Pending (${categoryTasks.pending.length})</h6>
+                                    <div class="space-y-2">
+                                        ${categoryTasks.pending.map(task => {
+                                            const deadlineDate = new Date(task.deadline).toLocaleDateString('id-ID');
+                                            const isOverdue = new Date(task.deadline) < new Date();
+                                            return `
+                                                <div class="bg-white p-3 rounded border-l-4 ${isOverdue ? 'border-red-500' : 'border-orange-500'}">
+                                                    <p class="font-medium text-gray-800">${task.title}</p>
+                                                    <p class="text-sm text-gray-600">${task.description}</p>
+                                                    <div class="flex justify-between items-center mt-2 text-xs text-gray-500">
+                                                        <span>EXP: +${categoryExpMap[category]?.expPerTask || 0}</span>
+                                                        <span class="${isOverdue ? 'text-red-600 font-medium' : ''}">
+                                                            Deadline: ${deadlineDate}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')
+                    : '<p class="text-gray-500 text-center py-8">Belum ada tugas yang diberikan kepada karyawan ini.</p>'
+                }
+            `;
+
+            document.getElementById('employeeJobdescModal').classList.remove('hidden');
+        }
+
+        function closeEmployeeJobdescModal() {
+            document.getElementById('employeeJobdescModal').classList.add('hidden');
+        }
+
+        function showAddPersonalTaskModal() {
+            document.getElementById('addPersonalTaskModal').classList.remove('hidden');
+            // Set minimum datetime to current time
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('personalTaskDeadline').min = now.toISOString().slice(0, 16);
+        }
+
+        function closeAddPersonalTaskModal() {
+            document.getElementById('addPersonalTaskModal').classList.add('hidden');
+            document.getElementById('addPersonalTaskForm').reset();
         }
 
         function showAddTaskModal() {
@@ -1024,6 +1348,7 @@
                     task.status = 'completed';
                     task.evidence = file.name;
                     task.note = note || null;
+                    task.completedAt = new Date();
                     
                     closeUploadModal();
                     renderEmployeeTasksList();
@@ -1032,6 +1357,59 @@
                     alert('Tugas berhasil diselesaikan! EXP telah ditambahkan.');
                 }
             }
+        });
+
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                alert('Password konfirmasi tidak cocok!');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                alert('Password minimal 6 karakter!');
+                return;
+            }
+            
+            if (currentEmployeeId) {
+                const employee = users.find(u => u.id === currentEmployeeId);
+                if (employee) {
+                    employee.password = newPassword;
+                    closeChangePasswordModal();
+                    alert('Password berhasil diubah!');
+                }
+            }
+        });
+
+        document.getElementById('addPersonalTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('personalTaskTitle').value;
+            const description = document.getElementById('personalTaskDescription').value;
+            const category = document.getElementById('personalTaskCategory').value;
+            const deadline = document.getElementById('personalTaskDeadline').value;
+            
+            const newTask = {
+                id: Math.max(...tasks.map(t => t.id), 0) + 1,
+                title,
+                description,
+                category,
+                assignee: currentUser.id,
+                deadline: deadline || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Default 7 days from now
+                status: 'pending',
+                evidence: null,
+                note: null,
+                createdAt: new Date(),
+                isPersonal: true
+            };
+            
+            tasks.push(newTask);
+            closeAddPersonalTaskModal();
+            renderEmployeeTasksList();
+            updateEmployeeStats();
+            alert('Tugas pribadi berhasil ditambahkan!');
         });
 
         // Utility Functions
@@ -1081,5 +1459,5 @@
         // Initialize
         populateTaskAssigneeOptions();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97a6401f6118c6b2',t:'MTc1NzA4MDgwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b5be1770e6c6b2',t:'MTc1NzI0MzI0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
