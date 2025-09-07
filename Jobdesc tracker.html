@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Login Page -->
+    <div id="loginPage" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md fade-in">
+            <div class="text-center mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span class="text-white text-2xl font-bold">PT</span>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Performance Tracker</h1>
+                <p class="text-gray-600 mt-2">Masuk ke akun Anda</p>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Masukkan username" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Masukkan password" required>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105">
+                    Masuk
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manager Dashboard -->
+    <div id="managerDashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">PT</span>
+                        </div>
+                        <h1 class="text-xl font-bold text-gray-800">Dashboard Manager</h1>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div id="notificationBell" class="relative cursor-pointer">
+                            <span class="text-2xl">🔔</span>
+                            <span id="notificationBadge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </div>
+                        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                            Keluar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notifications Panel -->
+        <div id="notificationsPanel" class="hidden fixed top-16 right-4 bg-white rounded-lg shadow-xl border w-80 z-50 notification">
+            <div class="p-4 border-b">
+                <h3 class="font-semibold text-gray-800">Notifikasi Level Up</h3>
+            </div>
+            <div id="notificationsList" class="max-h-64 overflow-y-auto">
+                <!-- Notifications will be populated here -->
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-3 rounded-lg">
+                            <span class="text-blue-600 text-xl">👥</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Total Karyawan</p>
+                            <p class="text-2xl font-bold text-gray-800" id="totalEmployees">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-3 rounded-lg">
+                            <span class="text-green-600 text-xl">✅</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Tugas Selesai</p>
+                            <p class="text-2xl font-bold text-gray-800" id="completedTasks">0</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="bg-orange-100 p-3 rounded-lg">
+                            <span class="text-orange-600 text-xl">⏳</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Tugas Pending</p>
+                            <p class="text-2xl font-bold text-gray-800" id="pendingTasks">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-lg">
+                            <span class="text-red-600 text-xl">⚠️</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm text-gray-600">Tugas Terlambat</p>
+                            <p class="text-2xl font-bold text-gray-800" id="overdueTasks">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-4 mb-8">
+                <button onclick="showAddEmployeeModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    + Tambah Karyawan
+                </button>
+                <button onclick="showAddTaskModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    + Buat Tugas
+                </button>
+                <button onclick="showChartsModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    📊 Lihat Chart
+                </button>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Employees List -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-lg font-semibold text-gray-800">Daftar Karyawan</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="employeesList" class="space-y-4">
+                            <!-- Employees will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tasks List -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h2 class="text-lg font-semibold text-gray-800">Semua Tugas</h2>
+                    </div>
+                    <div class="p-6">
+                        <div id="allTasksList" class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- Tasks will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Employee Dashboard -->
+    <div id="employeeDashboard" class="hidden min-h-screen">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <div class="bg-gradient-to-r from-green-600 to-teal-600 w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">PT</span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-800">Dashboard Karyawan</h1>
+                            <p class="text-sm text-gray-600" id="employeeWelcome">Selamat datang!</p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        Keluar
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Employee Stats and Skills -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Stats -->
+                <div class="lg:col-span-2 grid grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 p-3 rounded-lg">
+                                <span class="text-green-600 text-xl">✅</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">Tugas Selesai</p>
+                                <p class="text-2xl font-bold text-gray-800" id="employeeCompletedTasks">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="bg-orange-100 p-3 rounded-lg">
+                                <span class="text-orange-600 text-xl">⏳</span>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm text-gray-600">Tugas Pending</p>
+                                <p class="text-2xl font-bold text-gray-800" id="employeePendingTasks">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Overview -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800">Level Skills</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="employeeSkills" class="space-y-3">
+                            <!-- Skills will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Employee Tasks -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-800">Tugas Saya</h2>
+                </div>
+                <div class="p-6">
+                    <div id="employeeTasksList" class="space-y-4">
+                        <!-- Employee tasks will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Tambah Karyawan Baru</h3>
+            <form id="addEmployeeForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                    <input type="text" id="employeeName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="employeeUsername" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="employeePassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAddEmployeeModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors">
+                        Tambah
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="addTaskModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Buat Tugas Baru</h3>
+            <form id="addTaskForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul Tugas</label>
+                    <input type="text" id="taskTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                    <textarea id="taskDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Kategori Tugas</label>
+                    <select id="taskCategory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                        <option value="">Pilih kategori...</option>
+                        <option value="design">Design</option>
+                        <option value="video">Video</option>
+                        <option value="content">Konten Penjualan</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="development">Development</option>
+                        <option value="analysis">Analysis</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Assign ke</label>
+                    <select id="taskAssignee" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                        <option value="">Pilih karyawan...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tenggat Waktu</label>
+                    <input type="datetime-local" id="taskDeadline" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeAddTaskModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors">
+                        Buat Tugas
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Charts Modal -->
+    <div id="chartsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-4xl slide-up max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-semibold text-gray-800">Analytics Dashboard</h3>
+                <button onclick="closeChartsModal()" class="text-gray-500 hover:text-gray-700">
+                    <span class="text-2xl">×</span>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Employee Performance Chart -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-800 mb-4">Performa Karyawan</h4>
+                    <canvas id="employeePerformanceChart" width="400" height="300"></canvas>
+                </div>
+                
+                <!-- Category Distribution Chart -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-gray-800 mb-4">Distribusi Kategori Tugas</h4>
+                    <canvas id="categoryChart" width="400" height="300"></canvas>
+                </div>
+                
+                <!-- Skills Level Chart -->
+                <div class="bg-gray-50 p-4 rounded-lg lg:col-span-2">
+                    <h4 class="font-medium text-gray-800 mb-4">Level Skills Karyawan</h4>
+                    <canvas id="skillsChart" width="800" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Evidence Modal -->
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md slide-up">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Upload Bukti Penyelesaian</h3>
+            <form id="uploadForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">File Bukti (Foto/Video)</label>
+                    <input type="file" id="evidenceFile" accept="image/*,video/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
+                    <textarea id="evidenceNote" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Tambahkan catatan..."></textarea>
+                </div>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeUploadModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 rounded-lg transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition-colors">
+                        Upload & Selesai
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        let users = [
+            { id: 1, username: 'manager', password: 'manager123', name: 'Manager', role: 'manager' }
+        ];
+
+        let tasks = [];
+
+        let notifications = [];
+
+        // Category EXP system
+        const categoryExpMap = {
+            'design': { name: 'Design', expPerTask: 50, levelThreshold: 200 },
+            'video': { name: 'Video', expPerTask: 60, levelThreshold: 250 },
+            'content': { name: 'Konten Penjualan', expPerTask: 40, levelThreshold: 180 },
+            'marketing': { name: 'Marketing', expPerTask: 45, levelThreshold: 200 },
+            'development': { name: 'Development', expPerTask: 70, levelThreshold: 300 },
+            'analysis': { name: 'Analysis', expPerTask: 55, levelThreshold: 220 }
+        };
+
+        let currentUser = null;
+        let currentTaskId = null;
+
+        // Authentication
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginPage').classList.add('hidden');
+                
+                if (user.role === 'manager') {
+                    showManagerDashboard();
+                } else {
+                    showEmployeeDashboard();
+                }
+            } else {
+                alert('Username atau password salah!');
+            }
+        });
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('managerDashboard').classList.add('hidden');
+            document.getElementById('employeeDashboard').classList.add('hidden');
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        // Manager Dashboard Functions
+        function showManagerDashboard() {
+            document.getElementById('managerDashboard').classList.remove('hidden');
+            updateManagerStats();
+            renderEmployeesList();
+            renderAllTasksList();
+            populateTaskAssigneeOptions();
+            checkLevelUps();
+        }
+
+        function updateManagerStats() {
+            const totalEmployees = users.filter(u => u.role === 'employee').length;
+            const completedTasks = tasks.filter(t => t.status === 'completed').length;
+            const pendingTasks = tasks.filter(t => t.status === 'pending').length;
+            const overdueTasks = tasks.filter(t => t.status === 'pending' && new Date(t.deadline) < new Date()).length;
+            
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('pendingTasks').textContent = pendingTasks;
+            document.getElementById('overdueTasks').textContent = overdueTasks;
+        }
+
+        function renderEmployeesList() {
+            const employeesList = document.getElementById('employeesList');
+            const employees = users.filter(u => u.role === 'employee');
+            
+            if (employees.length === 0) {
+                employeesList.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada karyawan yang terdaftar.</p>';
+                return;
+            }
+            
+            employeesList.innerHTML = employees.map(employee => {
+                const employeeTasks = tasks.filter(t => t.assignee === employee.id);
+                const completedTasks = employeeTasks.filter(t => t.status === 'completed').length;
+                const skills = calculateEmployeeSkills(employee.id);
+                
+                return `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <span class="text-blue-600 font-medium text-lg">${employee.name.charAt(0)}</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">${employee.name}</p>
+                                <p class="text-sm text-gray-600">@${employee.username}</p>
+                                <p class="text-xs text-green-600">${completedTasks} tugas selesai</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="flex gap-2 mb-2">
+                                ${Object.entries(skills).map(([category, data]) => 
+                                    `<span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">
+                                        ${categoryExpMap[category]?.name || category} Lv.${data.level}
+                                    </span>`
+                                ).join('')}
+                            </div>
+                            <button onclick="deleteEmployee(${employee.id})" class="text-red-500 hover:text-red-700 p-2">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAllTasksList() {
+            const tasksList = document.getElementById('allTasksList');
+            
+            if (tasks.length === 0) {
+                tasksList.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada tugas yang dibuat.</p>';
+                return;
+            }
+            
+            tasksList.innerHTML = tasks.map(task => {
+                const assignee = users.find(u => u.id === task.assignee);
+                const isOverdue = task.status === 'pending' && new Date(task.deadline) < new Date();
+                const statusColor = task.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                   isOverdue ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800';
+                const statusText = task.status === 'completed' ? 'Selesai' : 
+                                  isOverdue ? 'Terlambat' : 'Pending';
+                
+                const deadlineDate = new Date(task.deadline);
+                const formattedDeadline = deadlineDate.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-800">${task.title}</h4>
+                            <span class="px-2 py-1 text-xs rounded-full ${statusColor}">${statusText}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${task.description}</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <div>
+                                <p>Assign: ${assignee ? assignee.name : 'Unknown'}</p>
+                                <p>Kategori: ${categoryExpMap[task.category]?.name || task.category}</p>
+                                <p>Deadline: ${formattedDeadline}</p>
+                            </div>
+                            <button onclick="deleteTask(${task.id})" class="text-red-500 hover:text-red-700 text-sm">
+                                Hapus
+                            </button>
+                        </div>
+                        ${task.evidence ? `<p class="text-xs text-green-600 mt-2">📎 ${task.evidence}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Employee Dashboard Functions
+        function showEmployeeDashboard() {
+            document.getElementById('employeeDashboard').classList.remove('hidden');
+            document.getElementById('employeeWelcome').textContent = `Selamat datang, ${currentUser.name}!`;
+            updateEmployeeStats();
+            renderEmployeeTasksList();
+            renderEmployeeSkills();
+        }
+
+        function updateEmployeeStats() {
+            const employeeTasks = tasks.filter(t => t.assignee === currentUser.id);
+            const completedTasks = employeeTasks.filter(t => t.status === 'completed').length;
+            const pendingTasks = employeeTasks.filter(t => t.status === 'pending').length;
+            
+            document.getElementById('employeeCompletedTasks').textContent = completedTasks;
+            document.getElementById('employeePendingTasks').textContent = pendingTasks;
+        }
+
+        function renderEmployeeSkills() {
+            const skillsContainer = document.getElementById('employeeSkills');
+            const skills = calculateEmployeeSkills(currentUser.id);
+            
+            if (Object.keys(skills).length === 0) {
+                skillsContainer.innerHTML = '<p class="text-gray-500 text-sm">Belum ada skill yang dikuasai.</p>';
+                return;
+            }
+            
+            skillsContainer.innerHTML = Object.entries(skills).map(([category, data]) => {
+                const categoryInfo = categoryExpMap[category];
+                const progressPercent = (data.exp % categoryInfo.levelThreshold) / categoryInfo.levelThreshold * 100;
+                
+                return `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">${categoryInfo.name}</span>
+                            <span class="text-xs text-gray-500">Level ${data.level}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>${data.exp % categoryInfo.levelThreshold} EXP</span>
+                            <span>${categoryInfo.levelThreshold} EXP</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderEmployeeTasksList() {
+            const tasksList = document.getElementById('employeeTasksList');
+            const employeeTasks = tasks.filter(t => t.assignee === currentUser.id);
+            
+            if (employeeTasks.length === 0) {
+                tasksList.innerHTML = '<p class="text-gray-500 text-center py-8">Belum ada tugas yang diberikan.</p>';
+                return;
+            }
+            
+            tasksList.innerHTML = employeeTasks.map(task => {
+                const isOverdue = task.status === 'pending' && new Date(task.deadline) < new Date();
+                const statusColor = task.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                   isOverdue ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800';
+                const statusText = task.status === 'completed' ? 'Selesai' : 
+                                  isOverdue ? 'Terlambat' : 'Pending';
+                
+                const deadlineDate = new Date(task.deadline);
+                const formattedDeadline = deadlineDate.toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                return `
+                    <div class="p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-800">${task.title}</h4>
+                            <span class="px-2 py-1 text-xs rounded-full ${statusColor}">${statusText}</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">${task.description}</p>
+                        <div class="text-xs text-gray-500 mb-3">
+                            <p>Kategori: ${categoryExpMap[task.category]?.name || task.category}</p>
+                            <p>Deadline: ${formattedDeadline}</p>
+                            <p>EXP Reward: ${categoryExpMap[task.category]?.expPerTask || 0} EXP</p>
+                        </div>
+                        ${task.status === 'pending' ? `
+                            <button onclick="completeTask(${task.id})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+                                ✅ Tandai Selesai
+                            </button>
+                        ` : `
+                            <div class="text-sm text-green-600">
+                                ✅ Tugas selesai
+                                ${task.evidence ? `<br>📎 Bukti: ${task.evidence}` : ''}
+                                ${task.note ? `<br>📝 Catatan: ${task.note}` : ''}
+                            </div>
+                        `}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Skills and EXP System
+        function calculateEmployeeSkills(employeeId) {
+            const employeeTasks = tasks.filter(t => t.assignee === employeeId && t.status === 'completed');
+            const skills = {};
+            
+            employeeTasks.forEach(task => {
+                const category = task.category;
+                const expGain = categoryExpMap[category]?.expPerTask || 0;
+                
+                if (!skills[category]) {
+                    skills[category] = { exp: 0, level: 1 };
+                }
+                
+                skills[category].exp += expGain;
+                skills[category].level = Math.floor(skills[category].exp / categoryExpMap[category].levelThreshold) + 1;
+            });
+            
+            return skills;
+        }
+
+        function checkLevelUps() {
+            const employees = users.filter(u => u.role === 'employee');
+            notifications = [];
+            
+            employees.forEach(employee => {
+                const skills = calculateEmployeeSkills(employee.id);
+                
+                Object.entries(skills).forEach(([category, data]) => {
+                    if (data.level > 1) {
+                        const existingNotification = notifications.find(n => 
+                            n.employeeId === employee.id && n.category === category && n.level === data.level
+                        );
+                        
+                        if (!existingNotification) {
+                            notifications.push({
+                                id: Date.now() + Math.random(),
+                                employeeId: employee.id,
+                                employeeName: employee.name,
+                                category: category,
+                                categoryName: categoryExpMap[category]?.name || category,
+                                level: data.level,
+                                timestamp: new Date()
+                            });
+                        }
+                    }
+                });
+            });
+            
+            updateNotificationBadge();
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notificationBadge');
+            if (notifications.length > 0) {
+                badge.textContent = notifications.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Notification Panel
+        document.getElementById('notificationBell').addEventListener('click', function() {
+            const panel = document.getElementById('notificationsPanel');
+            panel.classList.toggle('hidden');
+            
+            if (!panel.classList.contains('hidden')) {
+                renderNotifications();
+            }
+        });
+
+        function renderNotifications() {
+            const notificationsList = document.getElementById('notificationsList');
+            
+            if (notifications.length === 0) {
+                notificationsList.innerHTML = '<p class="p-4 text-gray-500 text-sm">Tidak ada notifikasi.</p>';
+                return;
+            }
+            
+            notificationsList.innerHTML = notifications.map(notification => `
+                <div class="p-4 border-b border-gray-100 hover:bg-gray-50">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-3">🎉</span>
+                        <div>
+                            <p class="text-sm font-medium text-gray-800">
+                                ${notification.employeeName} naik ke Level ${notification.level}!
+                            </p>
+                            <p class="text-xs text-gray-600">
+                                Kategori: ${notification.categoryName}
+                            </p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                ${notification.timestamp.toLocaleDateString('id-ID')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Modal Functions
+        function showAddEmployeeModal() {
+            document.getElementById('addEmployeeModal').classList.remove('hidden');
+        }
+
+        function closeAddEmployeeModal() {
+            document.getElementById('addEmployeeModal').classList.add('hidden');
+            document.getElementById('addEmployeeForm').reset();
+        }
+
+        function showAddTaskModal() {
+            document.getElementById('addTaskModal').classList.remove('hidden');
+            // Set minimum datetime to current time
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('taskDeadline').min = now.toISOString().slice(0, 16);
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('addTaskModal').classList.add('hidden');
+            document.getElementById('addTaskForm').reset();
+        }
+
+        function showChartsModal() {
+            document.getElementById('chartsModal').classList.remove('hidden');
+            setTimeout(() => {
+                renderCharts();
+            }, 100);
+        }
+
+        function closeChartsModal() {
+            document.getElementById('chartsModal').classList.add('hidden');
+        }
+
+        function showUploadModal(taskId) {
+            currentTaskId = taskId;
+            document.getElementById('uploadModal').classList.remove('hidden');
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+            document.getElementById('uploadForm').reset();
+            currentTaskId = null;
+        }
+
+        // Charts Functions
+        function renderCharts() {
+            renderEmployeePerformanceChart();
+            renderCategoryChart();
+            renderSkillsChart();
+        }
+
+        function renderEmployeePerformanceChart() {
+            const ctx = document.getElementById('employeePerformanceChart').getContext('2d');
+            const employees = users.filter(u => u.role === 'employee');
+            
+            const data = employees.map(employee => {
+                const employeeTasks = tasks.filter(t => t.assignee === employee.id);
+                return {
+                    name: employee.name,
+                    completed: employeeTasks.filter(t => t.status === 'completed').length,
+                    pending: employeeTasks.filter(t => t.status === 'pending').length
+                };
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [
+                        {
+                            label: 'Tugas Selesai',
+                            data: data.map(d => d.completed),
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Tugas Pending',
+                            data: data.map(d => d.pending),
+                            backgroundColor: 'rgba(251, 146, 60, 0.8)',
+                            borderColor: 'rgba(251, 146, 60, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCategoryChart() {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            const categoryCount = {};
+            
+            tasks.forEach(task => {
+                categoryCount[task.category] = (categoryCount[task.category] || 0) + 1;
+            });
+            
+            const colors = [
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(34, 197, 94, 0.8)',
+                'rgba(251, 146, 60, 0.8)',
+                'rgba(168, 85, 247, 0.8)',
+                'rgba(239, 68, 68, 0.8)',
+                'rgba(6, 182, 212, 0.8)'
+            ];
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryCount).map(cat => categoryExpMap[cat]?.name || cat),
+                    datasets: [{
+                        data: Object.values(categoryCount),
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderSkillsChart() {
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const employees = users.filter(u => u.role === 'employee');
+            const categories = Object.keys(categoryExpMap);
+            
+            const datasets = categories.map((category, index) => {
+                const colors = [
+                    'rgba(59, 130, 246, 0.8)',
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(251, 146, 60, 0.8)',
+                    'rgba(168, 85, 247, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(6, 182, 212, 0.8)'
+                ];
+                
+                return {
+                    label: categoryExpMap[category].name,
+                    data: employees.map(employee => {
+                        const skills = calculateEmployeeSkills(employee.id);
+                        return skills[category]?.level || 0;
+                    }),
+                    backgroundColor: colors[index % colors.length],
+                    borderColor: colors[index % colors.length].replace('0.8', '1'),
+                    borderWidth: 1
+                };
+            });
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: employees.map(e => e.name),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Level'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Form Handlers
+        document.getElementById('addEmployeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('employeeName').value;
+            const username = document.getElementById('employeeUsername').value;
+            const password = document.getElementById('employeePassword').value;
+            
+            if (users.find(u => u.username === username)) {
+                alert('Username sudah digunakan!');
+                return;
+            }
+            
+            const newUser = {
+                id: Math.max(...users.map(u => u.id)) + 1,
+                username,
+                password,
+                name,
+                role: 'employee'
+            };
+            
+            users.push(newUser);
+            closeAddEmployeeModal();
+            renderEmployeesList();
+            populateTaskAssigneeOptions();
+            updateManagerStats();
+            alert('Karyawan berhasil ditambahkan!');
+        });
+
+        document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitle').value;
+            const description = document.getElementById('taskDescription').value;
+            const category = document.getElementById('taskCategory').value;
+            const assignee = parseInt(document.getElementById('taskAssignee').value);
+            const deadline = document.getElementById('taskDeadline').value;
+            
+            const newTask = {
+                id: Math.max(...tasks.map(t => t.id), 0) + 1,
+                title,
+                description,
+                category,
+                assignee,
+                deadline,
+                status: 'pending',
+                evidence: null,
+                note: null,
+                createdAt: new Date()
+            };
+            
+            tasks.push(newTask);
+            closeAddTaskModal();
+            renderAllTasksList();
+            updateManagerStats();
+            alert('Tugas berhasil dibuat!');
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const file = document.getElementById('evidenceFile').files[0];
+            const note = document.getElementById('evidenceNote').value;
+            
+            if (file && currentTaskId) {
+                const task = tasks.find(t => t.id === currentTaskId);
+                if (task) {
+                    task.status = 'completed';
+                    task.evidence = file.name;
+                    task.note = note || null;
+                    
+                    closeUploadModal();
+                    renderEmployeeTasksList();
+                    updateEmployeeStats();
+                    renderEmployeeSkills();
+                    alert('Tugas berhasil diselesaikan! EXP telah ditambahkan.');
+                }
+            }
+        });
+
+        // Utility Functions
+        function populateTaskAssigneeOptions() {
+            const select = document.getElementById('taskAssignee');
+            const employees = users.filter(u => u.role === 'employee');
+            
+            select.innerHTML = '<option value="">Pilih karyawan...</option>' + 
+                employees.map(employee => `<option value="${employee.id}">${employee.name}</option>`).join('');
+        }
+
+        function completeTask(taskId) {
+            showUploadModal(taskId);
+        }
+
+        function deleteEmployee(employeeId) {
+            if (confirm('Yakin ingin menghapus karyawan ini? Semua tugas yang terkait juga akan dihapus.')) {
+                users = users.filter(u => u.id !== employeeId);
+                tasks = tasks.filter(t => t.assignee !== employeeId);
+                renderEmployeesList();
+                renderAllTasksList();
+                populateTaskAssigneeOptions();
+                updateManagerStats();
+                checkLevelUps();
+            }
+        }
+
+        function deleteTask(taskId) {
+            if (confirm('Yakin ingin menghapus tugas ini?')) {
+                tasks = tasks.filter(t => t.id !== taskId);
+                renderAllTasksList();
+                updateManagerStats();
+                checkLevelUps();
+            }
+        }
+
+        // Close notifications panel when clicking outside
+        document.addEventListener('click', function(e) {
+            const panel = document.getElementById('notificationsPanel');
+            const bell = document.getElementById('notificationBell');
+            
+            if (!panel.contains(e.target) && !bell.contains(e.target)) {
+                panel.classList.add('hidden');
+            }
+        });
+
+        // Initialize
+        populateTaskAssigneeOptions();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97a6401f6118c6b2',t:'MTc1NzA4MDgwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
